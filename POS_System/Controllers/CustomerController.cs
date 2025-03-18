@@ -32,5 +32,49 @@ namespace POS_System.Controllers
         {
             return Ok(customers);
         }
+
+        [HttpGet("{id}")]
+        public ActionResult<Customer> GetCustomerById(int id)
+        {
+            var customer = customers.FirstOrDefault(c => c.Id == id);
+            if(customer is null)
+                return NotFound();
+            return Ok(customer);
+        }
+
+        [HttpPost]
+        public ActionResult<Customer> AddCustomer(Customer cus)
+        {
+            if (cus is null)
+                return BadRequest();
+            cus.Id = customers.Max(c => c.Id) + 1;
+            customers.Add(cus);
+            return CreatedAtAction(nameof(GetCustomerById), new { id = cus.Id }, cus);
+        }
+
+        [HttpPut("{id}")]
+        public ActionResult UpdateCustomer(int id, Customer updatedCustomer)
+        {
+            var customer = customers.FirstOrDefault(c => c.Id == id);
+            if (updatedCustomer is null)
+                return NotFound();
+
+            customer.Name = updatedCustomer.Name;
+            customer.Address = updatedCustomer.Address;
+            customer.Contact = updatedCustomer.Contact;
+
+            return NoContent();
+        }
+
+        [HttpDelete("{id}")]
+        public ActionResult DeleteCustomer(int id)
+        {
+            var customer = customers.FirstOrDefault(c => c.Id == id);
+            if (customer is null)
+                return NotFound();
+
+            customers.Remove(customer);
+            return NoContent();
+        }
     }
 }
